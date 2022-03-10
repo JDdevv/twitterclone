@@ -1,0 +1,53 @@
+###post a tweet
+
+###
+GET http://localhost:5000/tweets/622506ceec00dbe41c251302
+
+####saf
+
+POST http://localhost:5000/register
+Content-Type: application/json
+
+{
+    "username" : "John doe 2",
+    "password" : "1874",
+    "description": "John doe's twitter"
+    
+}
+
+### Log in John doe
+
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+    "username":"John doe",
+    "password":"1874"
+}
+### Post a tweet as john doe
+POST http://localhost:5000/tweet
+content-type: application/json
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjI1MDZhYWVjMDBkYmU0MWMyNTEyZmMiLCJ1c2VybmFtZSI6IkpvaG4gZG9lIiwiaWF0IjoxNjQ2NzUzNjY3fQ.R60jgnLh5nRoLZoDgZAA58MrM191C3HpkiAP5Uu0nGc
+
+{
+    "content":"tweet from post client"
+}
+### Login John doe 2
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+    "username":"John doe 2",
+    "password": "1874"
+}
+
+###
+POST http://localhost:5000/tweet
+content-type: application/json
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjI1MDZjZWVjMDBkYmU0MWMyNTEzMDIiLCJ1c2VybmFtZSI6IkpvaG4gZG9lIDIiLCJpYXQiOjE2NDY3NTQwODB9.6_Im3M2nIGGhE-NAikBTZVlnI_czkM_E-yoKboYo8Ds
+
+{
+    "content":"John doe 2 tweet 2"
+}
+###
+GET http://localhost:5000/users/622506ceec00dbe41c251302
