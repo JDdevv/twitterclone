@@ -3,15 +3,28 @@ POST http://localhost:4000/login
 Content-Type: application/json 
 
 {   
-    "username":"John doe",
+    "username":"Juan perez",
     "password": "1234"
 }
-
-### POST TWEET
-POST http://localhost:5000/tweet
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjM2MjRjZGRiYTMyYjQzOWE5ZGI3OGQiLCJ1c2VybmFtZSI6IkpvaG4gZG9lIiwiaWF0IjoxNjQ3NzE3MDIxLCJleHAiOjE2NDc3MTcwNTF9.C0xRBROjhJWHlt7kfr6kpo8ewCMkKdvzEEcdnIBsjcs
+### regiser
+POST http://localhost:4000/register 
 Content-Type: application/json 
 
 {
-    "content":"THIS SHOULD BE THE FIRST TWEET"
+    "username":"Juan perez",
+    "password":"1234"
 }
+### POST TWEET
+POST http://localhost:5000/tweet
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjQ0YTQ4MmE3YzZmYzQzMTA5ZjhlNjAiLCJ1c2VybmFtZSI6Ikp1YW4gcGVyZXoiLCJpYXQiOjE2NDg2NjU4NTAsImV4cCI6MTY0ODY2NTg4MH0.Hg0NErjDwnqqedRv2xoVKzbKDNNlitw9RUH9OMEPSHE
+Content-Type: application/json 
+
+{
+    "content":"asdf"
+}
+### read tweets
+GET http://localhost:5000/tweets/user/623624cddba32b439a9db78d
+### delete tweets
+DELETE http://localhost:5000/tweets/delete/6244a50b91ae94330e975303
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjQ0YTQ4MmE3YzZmYzQzMTA5ZjhlNjAiLCJ1c2VybmFtZSI6Ikp1YW4gcGVyZXoiLCJpYXQiOjE2NDg2NjU5MzEsImV4cCI6MTY0ODY2NTk2MX0.oN2PTAz_OsgiZXfiXT59sfCuNO1P5B-jVKltVJLtkuE
+GET http://localhost:5000/test

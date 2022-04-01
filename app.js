@@ -11,8 +11,15 @@ app.use(cors({
 	origin : "*"
 }))	
 
+
 //MONGOOSE CONFIG
+
 const Tweet = require("./Tweet.js")
+const Doc = require("./TestDoc.js")
+const { resetWatchers } = require("nodemon/lib/monitor/watch")
+const newDoc = new Doc({
+	count : [ "aasdf"]
+})
 
 
 //ROUTING
@@ -31,7 +38,6 @@ app.get("/tweets", ( req , res ) => {
 
 //CREATE TWEET
 app.post("/tweet", validateRequest , ( req , res ) => {
-	console.log(req.body)
 	const { content } = req.body
 	if ( !content ) return res.sendStatus(400)
 	const newTweet = new Tweet( {
@@ -46,7 +52,7 @@ app.post("/tweet", validateRequest , ( req , res ) => {
 })
 // READ TWEETS
 
-// GET SPECIFIC TWEET
+	// GET SPECIFIC TWEET
 app.get("/tweets/:tweetId", ( req , res ) => {
 	const { tweetId } = req.params
 	Tweet.findOne( {_id:tweetId} , ( err , tweet ) => {
@@ -55,14 +61,44 @@ app.get("/tweets/:tweetId", ( req , res ) => {
 		res.json({tweet:tweet})
 	})
 })
-//GET TWEETS FROM SPECIFIC USER
+	//GET TWEETS FROM SPECIFIC USER
 app.get("/tweets/user/:userId" , ( req , res ) => {
 	Tweet.find({authorId:req.params.userId} , ( err , tweets ) => {
 		if ( err )return res.send(err)
 		return res.send(tweets)
 	})
 })
-		
+// DELETE TWEETS
+app.delete("/tweets/delete/:tweetId", validateRequest , ( req , res ) => {
+	const {tweetId} = req.params
+	if ( !tweetId ) return res.sendStatus(400)
+	Tweet.findOneAndDelete({_id:tweetId,authorId:req.user._id}, ( err , tweet ) => {
+		if ( !tweet ) return res.sendStatus( 404 ) 
+		if ( err ) return res.sendStatus( 500 )
+		return res.sendStatus(200)
+	})
+})		
+// LIKE TWEETS
+app.patch("/tweets/likes/:tweetId", validateRequest , ( req , res ) => {
+	const { tweetId } = req.params
+	if ( !tweetId ) res.sendStatus(400)
+	Tweet.findOne({_id:tweetId} , ( err , tweet ) => {
+		if ( !tweet ) return res.sendStatus(404)
+		if ( err ) return res.send( err ) 
+		if ( tweet.likes.includes( req.user._id ) ) {
+			tweet.likes.splice( tweet.likes.indexOf(req.user.id),1)
+			tweet.save( err => {
+				if (err) return res.sendStatus(500)
+				return res.sendStatus(200)
+			})
+		}
+		tweet.likes.push(req.user._id)
+		tweet.save( err  => {
+			if ( err ) return res.sendStatus(500)
+			res.sendStatus(200)
+		})
+	})
+})
 //Get info from user
 app.get("/users/:userId" , ( req , res ) => {
 	User.findOne({id:req.params.userId} , ( err , user ) => {
