@@ -1,0 +1,35 @@
+### REGISTER
+POST http://localhost:4000/register
+Content-Type: application/json
+
+{
+    "username": "User2",
+    "password" : "1234"
+}
+### LOGIN 
+POST http://localhost:4000/login
+Content-Type : application/json
+
+{
+    "username": "User2",
+    "password" : "1234"
+}
+### POST A TWEET
+POST http://localhost:5000/tweet
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjRkZjExZGEzZTBmMWUwNzVhMjY1YTYiLCJ1c2VybmFtZSI6IlVzZXIyIiwiaWF0IjoxNjUwNDg2NDk1LCJleHAiOjE2NTA0OTAwOTV9.H3IcmVKwcsKWEqmI0hO5BWi5RM7vUunc-SB9Ackf1Ug
+Content-Type: application/json
+
+{
+    "content" : "Tweet Content"
+}
+### LIKE A TWEET
+PATCH  http://localhost:5000/tweets/likes/62603045efebedcb896f7a86
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjRkZjExZGEzZTBmMWUwNzVhMjY1YTYiLCJ1c2VybmFtZSI6IlVzZXIyIiwiaWF0IjoxNjUwNDcxMDAxLCJleHAiOjE2NTA0NzQ2MDF9.jhHXNQGILRPj0UIbLN2hXjsJZus5JWwrEjN_8Rz2oNM
+### replie a tweet
+POST http://localhost:5000/replies/62603045efebedcb896f7a86
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjRkZjExZGEzZTBmMWUwNzVhMjY1YTYiLCJ1c2VybmFtZSI6IlVzZXIyIiwiaWF0IjoxNjUwNDg2NDk1LCJleHAiOjE2NTA0OTAwOTV9.H3IcmVKwcsKWEqmI0hO5BWi5RM7vUunc-SB9Ackf1Ug
+Content-Type: application/json 
+
+{
+    "content":"ratio"
+}
