@@ -7,7 +7,7 @@ const port = 5000
 const validateRequest = require("./validateRequest.js")
 app.use(express.json())
 app.use(cors({
-	allowedHeaders : ["Content-Type","authroization"],
+	allowedHeaders : ["Content-Type","Authorization"],
 	origin : "*"
 }))	
 
@@ -23,6 +23,7 @@ const { restart } = require("nodemon")
 
 //CREATE TWEET
 app.post("/tweet", validateRequest , ( req , res ) => {
+	console.log(req.body)
 	const { content } = req.body
 	if ( !content ) return res.sendStatus(400)
 	const newTweet = new Tweet( {
@@ -43,9 +44,11 @@ app.post("/tweet", validateRequest , ( req , res ) => {
 // GET SPECIFIC TWEET
 app.get("/tweets/:tweetId", ( req , res ) => {
 	const { tweetId } = req.params
+	console.log(tweetId)
+	if (!tweetId.match(/^[0-9a-fA-F]{24}$/)) return res.sendStatus(404)
 	Tweet.findOne( {_id:tweetId} , ( err , tweet ) => {
-		if ( err ) return res.send(500)
-		if ( !tweet ) return res.send(404)
+		if ( err ) return res.sendStatus(err)
+		if ( !tweet ) return res.sendStatus(404)
 		res.json({tweet:tweet})
 	})
 })
@@ -55,9 +58,11 @@ app.get("/tweets/:tweetId", ( req , res ) => {
 
 //GET TWEETS FROM SPECIFIC USER
 app.get("/tweets/user/:userId" , ( req , res ) => {
+	const {userId} = req.params
+	if ( !userId ) return res.sendStatus(400)
 	Tweet.find({authorId:req.params.userId} , ( err , tweets ) => {
-		if ( err )return res.send(err)
-		return res.send(tweets)
+		if ( err )return res.sendStatus(500)
+		return res.json({tweets:tweets})
 	})
 })
 // DELETE TWEETS
@@ -102,7 +107,7 @@ app.patch("/tweets/likes/:tweetId", validateRequest , ( req , res ) => {
 		}
 	})
 })
-
+//GET REPLIES
 app.get("/replies/:tweetId" , ( req , res ) => {
 	const {tweetId} = req.params
 	Tweet.find({replieFrom: tweetId , replie:true} , ( err , replies ) => {
@@ -111,7 +116,7 @@ app.get("/replies/:tweetId" , ( req , res ) => {
 		return res.json({replies:replies})
 	})
 })
-
+//REPLIE A TWEET
 app.post("/replies/:tweetId", validateRequest , ( req , res ) => {
 	const { tweetId } = req.params
 

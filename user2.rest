@@ -26,10 +26,16 @@ Content-Type: application/json
 PATCH  http://localhost:5000/tweets/likes/62603045efebedcb896f7a86
 Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjRkZjExZGEzZTBmMWUwNzVhMjY1YTYiLCJ1c2VybmFtZSI6IlVzZXIyIiwiaWF0IjoxNjUwNDcxMDAxLCJleHAiOjE2NTA0NzQ2MDF9.jhHXNQGILRPj0UIbLN2hXjsJZus5JWwrEjN_8Rz2oNM
 ### replie a tweet
-POST http://localhost:5000/replies/62603045efebedcb896f7a86
-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjRkZjExZGEzZTBmMWUwNzVhMjY1YTYiLCJ1c2VybmFtZSI6IlVzZXIyIiwiaWF0IjoxNjUwNDg2NDk1LCJleHAiOjE2NTA0OTAwOTV9.H3IcmVKwcsKWEqmI0hO5BWi5RM7vUunc-SB9Ackf1Ug
+POST http://localhost:5000/replies/6269c80d2f2c1ab81a2cb118
+Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjYwYTFhOTk1YzJjNmJhNTJlMWRkMTYiLCJ1c2VybmFtZSI6IlVzZXIyIiwiaWF0IjoxNjUxMTAwOTAxLCJleHAiOjE2NTExMDQ1MDF9.Zy_snZCNO08qSjkDFS3LBYMo_F9q-ZJKaVv1u3eVum8
 Content-Type: application/json 
 
 {
     "content":"ratio"
 }
+### DELETE TWEET
+DELETE http://localhost:5000/tweets/delete/626077933eb75f8b1a58d9a6
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjRkZjExZGEzZTBmMWUwNzVhMjY1YTYiLCJ1c2VybmFtZSI6IlVzZXIyIiwiaWF0IjoxNjUwNDg4NjcyLCJleHAiOjE2NTA0OTIyNzJ9.kz19lwMl4izWIWBByeghk0M9iSDcsD8nuDVE-Tj9ghM
+
+###
+GET http://localhost:5000/tweets/123123

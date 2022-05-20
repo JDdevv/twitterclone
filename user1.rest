@@ -16,7 +16,7 @@ Content-Type : application/json
 }
 ### POST A TWEET
 POST http://localhost:5000/tweet
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjRkZTY0N2EzZTBmMWUwNzVhMjY1OWYiLCJ1c2VybmFtZSI6IlVzZXIxIiwiaWF0IjoxNjQ5Mjc3NDMxLCJleHAiOjE2NDkyODEwMzF9.oMPHHD2KMzg7ygiiqB-ahyVt-jBaxWhCyj5VE8MsCog
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjYwYTE5Njk1YzJjNmJhNTJlMWRkMTAiLCJ1c2VybmFtZSI6IlVzZXIxIiwiaWF0IjoxNjUxMDk5NTg5LCJleHAiOjE2NTExMDMxODl9.q4lFiDRKDyvL5OLZCzbbs4r3Gd3uEXyjAZ899FV8Kyo
 Content-Type: application/json
 
 {
@@ -24,7 +24,11 @@ Content-Type: application/json
 }
 ### LIKE A TWEET
 PATCH  http://localhost:5000/tweets/likes/624de6a79ae6993d6df843aa
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjRkZTY0N2EzZTBmMWUwNzVhMjY1OWYiLCJ1c2VybmFtZSI6IlVzZXIxIiwiaWF0IjoxNjQ5MjcyNDM5LCJleHAiOjE2NDkyNzYwMzl9.y5eCL8QBo5WlqmwpROidrWuaTN3UwrGQDLg2s5V2lxg
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjRkZTY0N2EzZTBmMWUwNzVhMjY1OWYiLCJ1c2VybmFtZSI6IlVzZXIxIiwiaWF0IjoxNjUwNDcwOTQ2LCJleHAiOjE2NTA0NzQ1NDZ9.KU2lBwgAbGFgiPq8TYioQHlT0wHrSMDgrivx2nNgd08
 ###
-Get http://localhost:5000/replies/624dfba2dba01733853a913f
-
+Get http://localhost:5000/replies/62603045efebedcb896f7a86
+### 
+Get http://localhost:5000/test/62603045efebedcb896f7a86
+### follow user
+PATCH http://localhost:4000/users/follow/6260a1a995c2c6ba52e1dd16
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjYwYTE5Njk1YzJjNmJhNTJlMWRkMTAiLCJ1c2VybmFtZSI6IlVzZXIxIiwiaWF0IjoxNjUwNDk5OTk0LCJleHAiOjE2NTA1MDM1OTR9.8HsdHnPUC-9cdiUvPdhaivPkJEfhs6_LSkrzlk8BdpY
