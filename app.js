@@ -5,6 +5,8 @@ const app = express()
 const cors = require("cors")
 const port = 5000
 const validateRequest = require("./validateRequest.js")
+const checkIfTweetIsLiked = require("./checkIfTweetIsLiked")
+const jwt = require("jsonwebtoken")
 app.use(express.json())
 app.use(cors({
 	allowedHeaders : ["Content-Type","Authorization"],
@@ -16,6 +18,8 @@ app.use(cors({
 
 const Tweet = require("./Tweet.js")
 const { restart } = require("nodemon")
+const { send } = require("express/lib/response")
+const { JsonWebTokenError } = require("jsonwebtoken")
 
 
 
@@ -49,7 +53,7 @@ app.get("/tweets/:tweetId", ( req , res ) => {
 	Tweet.findOne( {_id:tweetId} , ( err , tweet ) => {
 		if ( err ) return res.sendStatus(err)
 		if ( !tweet ) return res.sendStatus(404)
-		res.json({tweet:tweet})
+		res.json({tweet:checkIfTweetIsLiked([tweet])})
 	})
 })
 
@@ -59,10 +63,16 @@ app.get("/tweets/:tweetId", ( req , res ) => {
 //GET TWEETS FROM SPECIFIC USER
 app.get("/tweets/user/:userId" , ( req , res ) => {
 	const {userId} = req.params
+	const token = req.headers.authorization
 	if ( !userId ) return res.sendStatus(400)
 	Tweet.find({authorId:req.params.userId} , ( err , tweets ) => {
 		if ( err )return res.sendStatus(500)
-		return res.json({tweets:tweets})
+		jwt.verify( token , process.env.JWT_SECRET , ( err , decoded ) => {
+			if ( err ) return res.json({ tweets:checkIfTweetIsLiked( tweets , 0 )})
+			if ( decoded ) {
+				return res.json({tweets:checkIfTweetIsLiked( tweets , decoded._id ) })
+			}
+		})
 	})
 })
 // DELETE TWEETS
@@ -142,6 +152,33 @@ app.post("/replies/:tweetId", validateRequest , ( req , res ) => {
 		})
 	})
 })
+
+
+
+app.patch("/reTweets/:tweetId", validateRequest , ( req , res ) => {
+	const {tweetId} = req.params
+	const { user } = req
+	Tweet.findOne({_id:tweetId} , ( err , tweet ) => {
+		if ( err ) return res.sendStatus(500)
+		if ( !tweet ) return res.sendStatus(500)
+		if ( tweet.reTweets.includes(user._id) ) {
+			tweet.reTweets.splice( tweet.reTweets.indexOf(user._id))
+			tweet.save( err => {
+				if ( err ) return res.sendStatus(500)
+				return res.sendStatus(200)
+			})
+		} else {
+			tweet.reTweets.push( user._id)
+			tweet.save( err => {
+				if ( err ) return res.sendStatus(500)
+				return res.sendStatus(200)
+			})
+		}
+	})
+})
+
+	
+
 	
 app.listen( port , () => console.log( "Server running on port: " + port.toString()))
 	

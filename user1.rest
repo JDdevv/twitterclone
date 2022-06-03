@@ -6,6 +6,9 @@ Content-Type: application/json
     "username": "User1",
     "password" : "1234"
 }
+### retweet
+PATCH  http://localhost:5000/retweets/628e8f67dd2b564655dbf230
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjYwYTE5Njk1YzJjNmJhNTJlMWRkMTAiLCJ1c2VybmFtZSI6IlVzZXIxIiwiaWF0IjoxNjUzNTEwMTk0LCJleHAiOjE2NTM1MTAyMDR9.GYRm0JmG9v8mvw-ONSXKikgzOJmqwlvLQXwf1e8uVVM
 ### LOGIN 
 POST http://localhost:4000/login
 Content-Type : application/json
@@ -14,6 +17,9 @@ Content-Type : application/json
     "username": "User1",
     "password" : "1234"
 }
+### follow user
+PATCH http://localhost:4000/users/follow/628e9eee73bdc8719692d2aa
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjYwYTE5Njk1YzJjNmJhNTJlMWRkMTAiLCJ1c2VybmFtZSI6IlVzZXIxIiwiaWF0IjoxNjUzNTE0NjY3LCJleHAiOjE2NTM1MTQ2Nzd9.OfvEQr4z1O-s4EqGvTddJ5yG7i3H26cCcGl0Qnoat0k
 ### POST A TWEET
 POST http://localhost:5000/tweet
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjYwYTE5Njk1YzJjNmJhNTJlMWRkMTAiLCJ1c2VybmFtZSI6IlVzZXIxIiwiaWF0IjoxNjUxMDk5NTg5LCJleHAiOjE2NTExMDMxODl9.q4lFiDRKDyvL5OLZCzbbs4r3Gd3uEXyjAZ899FV8Kyo
@@ -29,6 +35,4 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjRkZTY0N2EzZTBm
 Get http://localhost:5000/replies/62603045efebedcb896f7a86
 ### 
 Get http://localhost:5000/test/62603045efebedcb896f7a86
-### follow user
-PATCH http://localhost:4000/users/follow/6260a1a995c2c6ba52e1dd16
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjYwYTE5Njk1YzJjNmJhNTJlMWRkMTAiLCJ1c2VybmFtZSI6IlVzZXIxIiwiaWF0IjoxNjUwNDk5OTk0LCJleHAiOjE2NTA1MDM1OTR9.8HsdHnPUC-9cdiUvPdhaivPkJEfhs6_LSkrzlk8BdpY
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjYwYTE5Njk1YzJjNmJhNTJlMWRkMTAiLCJ1c2VybmFtZSI6IlVzZXIxIiwiaWF0IjoxNjUwNDk5OTk0LCJleHAiOjE2NTA1MDM1OTR9.8HsdHnPUC-9cdiUvPdhaivPkJEfhs6_LSkrzlk8BdpY

@@ -18,7 +18,7 @@ const tweetSchema = {
 		},
 		replieFrom : String,
 		replies : [String],
-		retweets : [String]
+		reTweets : [String]
 }
 const Tweet = mongoose.model("Tweet" , tweetSchema)
 module.exports = Tweet
