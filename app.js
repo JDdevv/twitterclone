@@ -129,6 +129,7 @@ app.get("/replies/:tweetId" , ( req , res ) => {
 //REPLIE A TWEET
 app.post("/replies/:tweetId", validateRequest , ( req , res ) => {
 	const { tweetId } = req.params
+	console.log(req.body)
 
 	Tweet.findOne({_id: tweetId } , ( err , tweet ) => {
 		if ( err ) return res.sendStatus( 500 ) 
