@@ -53,7 +53,7 @@ app.get("/tweets/:tweetId", ( req , res ) => {
 	Tweet.findOne( {_id:tweetId} , ( err , tweet ) => {
 		if ( err ) return res.sendStatus(err)
 		if ( !tweet ) return res.sendStatus(404)
-		res.json({tweet:checkIfTweetIsLiked([tweet])})
+		res.json({tweet:checkIfTweetIsLiked([tweet])[0]})
 	})
 })
 
