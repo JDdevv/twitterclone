@@ -97,19 +97,25 @@ app.delete("/tweets/delete/:tweetId", validateRequest , ( req , res ) => {
 })		
 // LIKE TWEETS
 app.patch("/tweets/likes/:tweetId", validateRequest , ( req , res ) => {
+	//Likes of a tweet are counted inserting the id of the user that liked it into the tweet likes array
+	//This way the amount of likes is measured by length of the tweet likes array
+	//And there is no need to store data about the likes in the users database
 	const { tweetId } = req.params
 	if ( !tweetId ) res.sendStatus(400)
 	Tweet.findOne({_id:tweetId} , ( err , tweet ) => {
 		if ( !tweet ) return res.sendStatus(404)
 		if ( err ) return res.sendStatus( 500 ) 
-		if ( tweet.likes.includes( req.user._id ) ) {
-			tweet.likes.splice( tweet.likes.indexOf(req.user.id),1)
+		//If the tweet is liked by the requesting user, remove that user id from the likes of the tweet
+		if ( tweet.stats.likes.includes( req.user._id ) ) {
+			tweet.stats.likes.splice( tweet.stats.likes.indexOf(req.user.id),1)
 			tweet.save( err => {
 				if (err) return res.sendStatus(500)
 				return res.sendStatus(200)
 			})
-		} else {
-			tweet.likes.push(req.user._id)
+		} 
+		//If the tweet is not liked by the requesting user put that user id in likes array
+		else {
+			tweet.stats.likes.push(req.user._id)
 			tweet.save( err  => {
 				if ( err ) return res.sendStatus(500)
 				return res.sendStatus(200)
@@ -121,7 +127,6 @@ app.patch("/tweets/likes/:tweetId", validateRequest , ( req , res ) => {
 app.get("/replies/:tweetId" , ( req , res ) => {
 	const {tweetId} = req.params
 	Tweet.find({replieFrom: tweetId , replie:true} , ( err , replies ) => {
-		console.log(replies,tweetId)
 		if ( err ) return res.sendStatus( 500 )
 		return res.json({replies:replies})
 	})
@@ -129,8 +134,10 @@ app.get("/replies/:tweetId" , ( req , res ) => {
 //REPLIE A TWEET
 app.post("/replies/:tweetId", validateRequest , ( req , res ) => {
 	const { tweetId } = req.params
-	console.log(req.body)
-
+	//Replies are stored as another tweet, but with the replie field set to true
+	//And the id of the replied tweet is stored in the replieFrom field so its easy to find the replies of that tweet
+	//This way the only data about the replie stored in the original tweet is the id,
+	// so we can now how many replies the tweet has by checking the lenth of the replies array
 	Tweet.findOne({_id: tweetId } , ( err , tweet ) => {
 		if ( err ) return res.sendStatus( 500 ) 
 		if ( !tweet ) return res.sendStatus(404)
@@ -139,12 +146,15 @@ app.post("/replies/:tweetId", validateRequest , ( req , res ) => {
 			authorUsername : req.user.username,
 			content : req.body.content,
 			replie: true ,
+			//The id of the replied tweet
 			replieFrom : tweetId
 		})
+		//Saving the replie tweet
 		newTweet.save( err => {
 			if ( err ) return res.sendStatus( 500 ) 
 			else {
-				tweet.replies.push(newTweet._id)
+				tweet.stats.replies.push(newTweet._id)
+				//Saving the original tweet
 				tweet.save( err => {
 					if ( err ) return res.send(err)
 					return res.sendStatus(201)
@@ -157,19 +167,23 @@ app.post("/replies/:tweetId", validateRequest , ( req , res ) => {
 
 
 app.patch("/reTweets/:tweetId", validateRequest , ( req , res ) => {
+	//Retweets are stored and counted the same way as the likes
 	const {tweetId} = req.params
 	const { user } = req
 	Tweet.findOne({_id:tweetId} , ( err , tweet ) => {
 		if ( err ) return res.sendStatus(500)
 		if ( !tweet ) return res.sendStatus(500)
-		if ( tweet.reTweets.includes(user._id) ) {
-			tweet.reTweets.splice( tweet.reTweets.indexOf(user._id))
+		//If the tweet is already retweeted by the requesting user, delete its user id from the retweets array
+		if ( tweet.stats.reTweets.includes(user._id) ) {
+			tweet.stats.reTweets.splice( tweet.stats.reTweets.indexOf(user._id))
 			tweet.save( err => {
 				if ( err ) return res.sendStatus(500)
 				return res.sendStatus(200)
 			})
-		} else {
-			tweet.reTweets.push( user._id)
+		} 
+		//If the tweet is not retweeted by the requesting user, insert its username in the retweets array
+		else {
+			tweet.stats.reTweets.push( user._id)
 			tweet.save( err => {
 				if ( err ) return res.sendStatus(500)
 				return res.sendStatus(200)
@@ -178,7 +192,14 @@ app.patch("/reTweets/:tweetId", validateRequest , ( req , res ) => {
 	})
 })
 
-	
+app.get("/stats/:tweetId" , ( req , res ) => {
+	const { tweetId } = req.params
+	Tweet.findOne({_id:tweetId} , ( err , tweet ) => {
+		if ( err ) return res.sendStatus(500)
+		if ( !tweet ) return res.sendStatus(404)
+		return res.send(tweet.stats)
+	})
+})
 
 	
 app.listen( port , () => console.log( "Server running on port: " + port.toString()))
