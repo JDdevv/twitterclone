@@ -20,12 +20,13 @@ const Tweet = require("./Tweet.js")
 const { restart } = require("nodemon")
 const { send } = require("express/lib/response")
 const { JsonWebTokenError } = require("jsonwebtoken")
+const isUserLogged = require("./isUserLogged.js")
 
 
 
 
 
-//CREATE TWEET
+//-------------------------- CREATE -------------------------------
 app.post("/tweet", validateRequest , ( req , res ) => {
 	console.log(req.body)
 	const { content } = req.body
@@ -40,20 +41,52 @@ app.post("/tweet", validateRequest , ( req , res ) => {
 		return res.sendStatus(201)
 	})
 })
-// READ TWEETS
+
+
+//REPLIE A TWEET
+app.post("/replies/:tweetId", validateRequest , ( req , res ) => {
+	const { tweetId } = req.params
+	//Replies are stored as another tweet, but with the replie field set to true
+	//And the id of the replied tweet is stored in the replieFrom field so its easy to find the replies of that tweet
+	//This way the only data about the replie stored in the original tweet is the id,
+	// so we can now how many replies the tweet has by checking the lenth of the replies array
+	Tweet.findOne({_id: tweetId } , ( err , tweet ) => {
+		if ( err ) return res.sendStatus( 500 ) 
+		if ( !tweet ) return res.sendStatus(404)
+		const newTweet = new Tweet({
+			authorId : req.user._id,
+			authorUsername : req.user.username,
+			content : req.body.content,
+			replie: true ,
+			//The id of the replied tweet
+			replieFrom : tweetId
+		})
+		//Saving the replie tweet
+		newTweet.save( err => {
+			if ( err ) return res.sendStatus( 500 ) 
+			else {
+				tweet.stats.replies.push(newTweet._id)
+				//Saving the original tweet
+				tweet.save( err => {
+					if ( err ) return res.send(err)
+					return res.sendStatus(201)
+				})
+			}
+		})
+	})
+})
 
 
 
+// ---------------------- READ ---------------------------
 
 // GET SPECIFIC TWEET
-app.get("/tweets/:tweetId", ( req , res ) => {
+app.get("/tweets/:tweetId", isUserLogged, ( req , res ) => {	
 	const { tweetId } = req.params
-	console.log(tweetId)
-	if (!tweetId.match(/^[0-9a-fA-F]{24}$/)) return res.sendStatus(404)
 	Tweet.findOne( {_id:tweetId} , ( err , tweet ) => {
 		if ( err ) return res.sendStatus(err)
 		if ( !tweet ) return res.sendStatus(404)
-		res.json({tweet:checkIfTweetIsLiked([tweet])[0]})
+		res.json(checkIfTweetIsLiked([tweet],req.user)[0])
 	})
 })
 
@@ -61,20 +94,35 @@ app.get("/tweets/:tweetId", ( req , res ) => {
 
 
 //GET TWEETS FROM SPECIFIC USER
-app.get("/tweets/user/:userId" , ( req , res ) => {
+app.get("/tweets/user/:userId", isUserLogged , ( req , res ) => {
 	const {userId} = req.params
-	const token = req.headers.authorization
 	if ( !userId ) return res.sendStatus(400)
-	Tweet.find({authorId:req.params.userId} , ( err , tweets ) => {
-		if ( err )return res.sendStatus(500)
-		jwt.verify( token , process.env.JWT_SECRET , ( err , decoded ) => {
-			if ( err ) return res.json({ tweets:checkIfTweetIsLiked( tweets , 0 )})
-			if ( decoded ) {
-				return res.json({tweets:checkIfTweetIsLiked( tweets , decoded._id ) })
-			}
-		})
+	Tweet.find({authorId:req.params.userId}, ( err , tweets ) => {
+		if ( err ) return res.sendStatus(505)
+		return res.json(checkIfTweetIsLiked(tweets,req.user))
 	})
 })
+//GET REPLIES
+app.get("/replies/:tweetId", isUserLogged , ( req , res ) => {
+	const {tweetId} = req.params
+	Tweet.find({replieFrom: tweetId , replie:true} , ( err , replies ) => {
+		if ( err ) return res.sendStatus( 500 )
+		return res.json(checkIfTweetIsLiked(replies,req.user))
+	})
+})
+
+
+app.get("/stats/:tweetId" , ( req , res ) => {
+	const { tweetId } = req.params
+	Tweet.findOne({_id:tweetId} , ( err , tweet ) => {
+		if ( err ) return res.sendStatus(500)
+		if ( !tweet ) return res.sendStatus(404)
+		return res.send(tweet.stats)
+	})
+})
+
+
+// ---------------- UPDATE AND DELETE -----------------
 // DELETE TWEETS
 app.delete("/tweets/delete/:tweetId", validateRequest , ( req , res ) => {
 	const {tweetId} = req.params
@@ -123,49 +171,8 @@ app.patch("/tweets/likes/:tweetId", validateRequest , ( req , res ) => {
 		}
 	})
 })
-//GET REPLIES
-app.get("/replies/:tweetId" , ( req , res ) => {
-	const {tweetId} = req.params
-	Tweet.find({replieFrom: tweetId , replie:true} , ( err , replies ) => {
-		if ( err ) return res.sendStatus( 500 )
-		return res.json({replies:replies})
-	})
-})
-//REPLIE A TWEET
-app.post("/replies/:tweetId", validateRequest , ( req , res ) => {
-	const { tweetId } = req.params
-	//Replies are stored as another tweet, but with the replie field set to true
-	//And the id of the replied tweet is stored in the replieFrom field so its easy to find the replies of that tweet
-	//This way the only data about the replie stored in the original tweet is the id,
-	// so we can now how many replies the tweet has by checking the lenth of the replies array
-	Tweet.findOne({_id: tweetId } , ( err , tweet ) => {
-		if ( err ) return res.sendStatus( 500 ) 
-		if ( !tweet ) return res.sendStatus(404)
-		const newTweet = new Tweet({
-			authorId : req.user._id,
-			authorUsername : req.user.username,
-			content : req.body.content,
-			replie: true ,
-			//The id of the replied tweet
-			replieFrom : tweetId
-		})
-		//Saving the replie tweet
-		newTweet.save( err => {
-			if ( err ) return res.sendStatus( 500 ) 
-			else {
-				tweet.stats.replies.push(newTweet._id)
-				//Saving the original tweet
-				tweet.save( err => {
-					if ( err ) return res.send(err)
-					return res.sendStatus(201)
-				})
-			}
-		})
-	})
-})
 
-
-
+// Retweet a tweet
 app.patch("/reTweets/:tweetId", validateRequest , ( req , res ) => {
 	//Retweets are stored and counted the same way as the likes
 	const {tweetId} = req.params
@@ -189,15 +196,6 @@ app.patch("/reTweets/:tweetId", validateRequest , ( req , res ) => {
 				return res.sendStatus(200)
 			})
 		}
-	})
-})
-
-app.get("/stats/:tweetId" , ( req , res ) => {
-	const { tweetId } = req.params
-	Tweet.findOne({_id:tweetId} , ( err , tweet ) => {
-		if ( err ) return res.sendStatus(500)
-		if ( !tweet ) return res.sendStatus(404)
-		return res.send(tweet.stats)
 	})
 })
 

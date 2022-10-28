@@ -4,6 +4,7 @@ function checkIfTweetIsLiked( tweets , userId ) {
         let updatedTweet = tweet.toObject()
         if ( tweet.stats.likes.includes(userId) ) updatedTweet.like = true
         else updatedTweet.like = false
+        console.log(updatedTweet,'asdfasdf')
         return updatedTweet
     })
 
