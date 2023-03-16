@@ -9,10 +9,10 @@ const checkIfTweetIsLiked = require("./checkIfTweetIsLiked")
 const jwt = require("jsonwebtoken")
 app.use(express.json())
 app.use(cors({
-	allowedHeaders : ["Content-Type","Authorization"],
-	origin : "*"
-}))	
-
+    allowedHeaders:["Content-Type","authorization"],
+    origin: "*",
+    methods:["PATCH","POST"],
+}))
 
 //MONGOOSE CONFIG
 
@@ -21,22 +21,29 @@ const { restart } = require("nodemon")
 const { send } = require("express/lib/response")
 const { JsonWebTokenError } = require("jsonwebtoken")
 const isUserLogged = require("./isUserLogged.js")
-
+const User = require("./User.js")
+const { default: mongoose } = require("mongoose")
 
 
 
 
 //-------------------------- CREATE -------------------------------
+
+app.get("/test" , ( req ,res ) => {
+	res.json({data:"hello"})
+})
+// POST A TWEET
 app.post("/tweet", validateRequest , ( req , res ) => {
-	console.log(req.body)
 	const { content } = req.body
 	if ( !content ) return res.sendStatus(400)
+	console.log(content)
 	const newTweet = new Tweet( {
 		content : content,
 		authorUsername : req.user.username,
 		authorId : req.user._id
 	})
 	newTweet.save( err => {
+		console.log(err)
 		if ( err ) return res.sendStatus(500)
 		return res.sendStatus(201)
 	})
@@ -110,8 +117,15 @@ app.get("/replies/:tweetId", isUserLogged , ( req , res ) => {
 		return res.json(checkIfTweetIsLiked(replies,req.user))
 	})
 })
-
-
+//Get the feed
+app.get("/feed",validateRequest , (req, res ) => {
+	const userId = mongoose.Types.ObjectId(req.user._id)
+	console.log(userId)
+	User.findOne( {}, (err ,user)=> {
+		console.log(err,user)
+		res.sendStatus(200)
+	})
+ })
 app.get("/stats/:tweetId" , ( req , res ) => {
 	const { tweetId } = req.params
 	Tweet.findOne({_id:tweetId} , ( err , tweet ) => {
